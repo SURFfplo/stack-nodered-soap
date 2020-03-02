@@ -1,0 +1,39 @@
+version: '3.7'
+
+networks: 
+  dev-net:
+    external: true
+  test-net:
+    external: true
+  exp-net:
+    external: true
+
+services:
+  nodered:
+    #image: nodered
+    image: 192.87.106.18:56001/nodered:0.2
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+      restart_policy:
+        condition: any
+    networks:
+      - $STACK_NETWORK
+    volumes:
+      #- $PWD/data:/data
+      - /mnt/nfs/nfsdlo/$STACK_NETWORK/$STACK_SERVICE/$STACK_VERSION/data:/data
+    ports:
+      - $STACK_PORT:1880
+    configs:
+      - source: nodered_conf
+        target: /data/settings.js
+#        uid: node-red
+#        gid: node-red
+
+configs:
+  nodered_conf:
+    external: true
